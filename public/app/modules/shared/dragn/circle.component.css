@@ -1,0 +1,13 @@
+.output {
+    stroke: black;
+    fill: white;
+}
+.input {
+    stroke: white;
+    fill: black;
+}
+.active {
+    stroke: red;
+    stroke-width: 2px;
+    fill-opacity: 0;
+}

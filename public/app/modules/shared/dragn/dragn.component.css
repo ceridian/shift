@@ -1,0 +1,27 @@
+svg {
+    border: 1px solid black;
+}
+.links line {
+  stroke: #999;
+  stroke-opacity: 0.6;
+}
+.source rect {
+    stroke: black;
+    fill: blue;
+}
+.refit rect {
+    stroke: black;
+    fill: white;
+}
+.output circle {
+    stroke: black;
+    fill: white;
+}
+.input circle {
+    stroke: white;
+    fill: black;
+}
+.active {
+    stroke: red;
+    stroke-width: 2px;
+}

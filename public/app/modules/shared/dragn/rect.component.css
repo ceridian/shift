@@ -1,0 +1,12 @@
+.source {
+    stroke: black;
+    fill: blue;
+}
+.refit {
+    stroke: black;
+    fill: white;
+}
+.active {
+    stroke: red;
+    stroke-width: 2px;
+}

@@ -1,0 +1,2 @@
+<svg:rect [attr.x]="rect.x" [attr.y]="rect.y" [attr.width]="rect.w"  [attr.height]="rect.h" [attr.class]="rect.subTypes" (mousedown)="click(rect)"/>
+<svg:g ng-circle *ngFor="let element of rect.children" [circle]="element" (onClick)="click($event)"></svg:g>

@@ -1,0 +1,4 @@
+<svg #svg width="1000" height="500" (mousedown)="onMouseDown($event)" (mouseup)="onMouseUp($event)" (mousemove)="onMouseMove($event)"> 
+    <svg:g *ngFor="let element of elements" ng-rect [rect]="element" (onClick)="click($event)"></svg:g>
+    <svg:g *ngFor="let link of links" ng-line [line]="link"></svg:g>
+</svg>

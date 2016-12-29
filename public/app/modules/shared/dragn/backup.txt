@@ -1,0 +1,368 @@
+/*@Input() width: number;
+    @Input() height: number;
+    @Input() elements: Array<any>;
+    private r: number;
+    public h: number;
+    public w: number;
+    constructor(){
+        this.r = 10;
+        this.h = 150;
+        this.w = 100;
+    }
+
+    ngAfterViewInit(){
+        console.log(this.elements);
+    }*/
+    /*@ViewChild('canvas') canvasRef:ElementRef;
+    private canvas: any;
+    private ctx: any;
+    private html: any;
+    private selection: any;
+    private selectionColor: string;
+    private elements: Array<Element>;
+    private links: Array<Link>;
+    private selectionWidth: number;
+    private interval: number;
+    private padLeft: number;
+    private padTop: number;
+    private borLeft: number;
+    private borTop: number;
+    private htmlTop: number;
+    private htmlLeft: number;
+    private dragoffx: number;
+    private dragoffy: number;
+    private rectW: number;
+    private rectH: number;
+    private r: number;
+    private valid: boolean;
+    private dragging: boolean;
+
+    //<rect height="150" width="100" x="50" y="50" class="refit"></rect>
+    //<circle r="10" class="input" cx="50" cy="125"></circle>
+    //<line class="link" x1="" y1="" x2="" y2=""></line>
+    
+    constructor(private dragn: DragnService){
+        this.selectionColor = '#CC0000';
+        this.selectionWidth = 2;
+        this.interval = 30;
+        this.rectH = 150;
+        this.rectW = 100;
+        this.r = 10;
+        this.elements = [
+            new Element({
+                id: '1',
+                type: 'source',
+                label: 'Test Source',
+                offset: 25,
+                actions: [
+                    {
+                        id: '1',
+                        type: 'output',
+                        typeTotal: 2,
+                        typeCount: 1,
+                        label: 'Array'
+                    }
+                ]
+            }),
+            new Element({
+                id: '2',
+                type: 'refit',
+                label: 'Loop',
+                offset: 50,
+                actions: [
+                    {
+                        id: '1',
+                        type: 'input',
+                        typeTotal: 2,
+                        typeCount: 1,
+                        label: 'Array'
+                    },
+                    {
+                        id: '2',
+                        type: 'output',
+                        typeTotal: 2,
+                        typeCount: 1,
+                        label: 'object'
+                    }
+                ]
+            })
+        ];
+    }
+
+    ngAfterViewInit(){
+        var axisX = d3.axisBottom(d3.scaleLinear().range([0, this.width])).tickSize(-this.height).tickFormat("");
+        var axisY = d3.axisLeft(d3.scaleLinear().range([0,this.height])).tickSize(-this.width).tickFormat("");
+
+        var svg = d3.select("body").append("svg")
+            .attr("width", this.width)
+            .attr("height", this.height);
+
+        var groups = svg.selectAll('g')
+            .data(this.elements)
+            .enter()
+            .append('g');
+
+        svg.append("g")
+            .attr("class", "grid")
+            .attr("transform", "translate(0," + this.height + ")")
+            .call(axisX);
+
+        svg.append("g")			
+            .attr("class", "grid")
+            .call(axisY); 
+
+        var rects = groups.append('rect')
+            .attr("height", this.rectH)
+            .attr("width", this.rectW)
+            .attr('x', function(d){ return d.x;})
+            .attr('y', function(d){ return d.y;})
+            .attr("class", function(d){return d.type;})
+            .call(d3.drag()
+                .on("start", this.dragRecStart)
+                .on("end", this.dragRecStop)
+                .on("drag", this.dragRec));
+
+        var circles = groups.selectAll('circle')
+            .data(function(d){
+                for(var i in d.actions){
+                    d.actions[i].parentX = d.x;
+                    d.actions[i].parentY = d.y;
+                    d.actions[i].w = d.w;
+                    d.actions[i].h = d.h;
+                }
+                return d.actions;
+            })
+            .enter()
+            .append('circle')
+                .attr('r', this.r)
+                .attr('class', function(d){return d.type;})
+                .attr('cx', function(d){
+                    if(d.type == 'output'){
+                        d.x = d.parentX + d.w;
+                        d.offX = d.w;
+                    }else{
+                        d.x = d.parentX;
+                        d.offX = 0;
+                    }
+                    return d.x;
+                })
+                .attr('cy', function(d){
+                    d.offY = d.typeCount / d.typeTotal * d.h;
+                    d.y = d.offY + d.parentY;
+                    return d.y;
+                })
+                .call(d3.drag()
+                    .on("start", this.dragCirStart)
+                    .on("end", this.dragCirStop)
+                    .on("drag", this.dragCir));;
+    }
+    // circle dragging
+    private dragCirStart(){
+        
+    }
+
+    private dragCirStop(){
+
+    }
+
+    private dragCir(){
+        let x = d3.event.sourceEvent.layerX; //- this.dragoffx;
+        let y = d3.event.sourceEvent.layerY; //- this.dragoffy;
+        console.log(d3.event);
+
+        d3.select(this)
+            .attr("cx", x)
+            .attr("cy", y);
+    }
+
+    // rect dragging
+
+    private dragRecStart(){
+        d3.select(this).classed("active", true);
+        this.dragoffx = d3.event.sourceEvent.layerX - d3.select(this).attr('x');
+        this.dragoffy = d3.event.sourceEvent.layerY - d3.select(this).attr('y');
+    }
+
+    private dragRecStop(){
+        d3.select(this).classed("active", false);
+    }
+
+    private dragRec(){
+        //sourceEvent = MouseEvent;
+        //subject = d ie. data element
+        let x = d3.event.sourceEvent.layerX - this.dragoffx;
+        let y = d3.event.sourceEvent.layerY - this.dragoffy;
+        d3.select(this)
+            .attr("x", x)
+            .attr("y", y);
+
+        d3.select(this.parentNode).selectAll('circle')
+            .attr('cx', function(d){
+                if(d.docked){
+                    d.x = x + d.offX;
+                }
+                return d.x;
+            })
+            .attr('cy', function(d){
+                if(d.docked){
+                    d.y = y + d.offY;
+                }
+                return d.y;
+            })
+
+    }*/
+
+    /*ngAfterViewInit() {
+        this.canvas = this.canvasRef.nativeElement;
+        this.canvas.width = this.width;
+        this.canvas.height = this.height;
+        
+        this.ctx = this.canvas.getContext('2d');
+        if (document.defaultView && document.defaultView.getComputedStyle) {
+            this.padLeft = parseInt(document.defaultView.getComputedStyle(this.canvas, null)['paddingLeft'], 10) || 0;
+            this.padTop = parseInt(document.defaultView.getComputedStyle(this.canvas, null)['paddingTop'], 10) || 0;
+            this.borLeft = parseInt(document.defaultView.getComputedStyle(this.canvas, null)['borderLeftWidth'], 10) || 0;
+            this.borTop = parseInt(document.defaultView.getComputedStyle(this.canvas, null)['borderTopWidth'], 10) || 0;
+        }
+
+        this.html = document.body.parentNode;
+        this.htmlTop = this.html.offsetTop;
+        this.htmlLeft = this.html.offsetLeft;
+
+        this.ctx = this.canvas.getContext('2d');
+        this.drawElements();
+
+        let state = this;
+
+        this.canvas.addEventListener('mousedown', function(e: MouseEvent) {
+            let mouse = state.getMouse(e);
+            for(let i in state.elements){
+                if(state.elements[i].contains(mouse.x, mouse.y)){
+                    state.selection = state.elements[i];
+                    state.dragoffx = mouse.x - state.selection.x;
+                    state.dragoffy = mouse.y - state.selection.y;
+                    state.dragging = true;
+                    state.valid = false;
+                    return;
+                }
+            }
+            if (state.selection) {
+                state.selection = null;
+                state.valid = false; // Need to clear the old selection border
+            }
+        });
+
+        this.canvas.addEventListener('mousemove', function(e: MouseEvent) {
+
+            if(state.dragging){
+                var mouse = state.getMouse(e);
+                state.selection.x = mouse.x - state.dragoffx;
+                state.selection.y = mouse.y - state.dragoffy;
+                state.valid = false;
+            }
+        });
+
+        this.canvas.addEventListener('mouseup', function(e: MouseEvent) {
+            state.dragging = false;
+        });
+
+
+        setInterval(function() { state.drawElements(); }, state.interval);
+    }*/
+
+    //private contains(mx: number, my: number, el: Element){
+        //return  (this.x <= mx) && (this.x + this.w >= mx) && (this.y <= my) && (this.y + this.h >= my);
+    /*private getClicked(){
+        for(let i in this.elements){
+            let el = this.elements[i];
+        }
+    }
+
+    private getMouse(e: MouseEvent){
+        return {x: e.layerX, y: e.layerY};
+    }
+
+    private clear(){
+        this.ctx.clearRect(0, 0, this.width, this.height);
+    }
+
+    private drawElements(){
+        if(!this.valid){
+            this.clear();
+            for(let i in this.elements){
+                let shape = this.elements[i];
+                if (shape.x > this.width || shape.y > this.height || shape.x + shape.w < 0 || shape.y + shape.h < 0) continue;
+                this.create(this.elements[i]);
+            }
+            if(this.selection != null){
+                this.ctx.strokeStyle = this.selectionColor;
+                this.ctx.lineWidth = this.selectionWidth;
+                this.ctx.strokeRect(this.selection.x,this.selection.y,this.selection.w,this.selection.h);
+            }
+            this.valid = true;
+        }
+    }
+
+    private getElementById(id: string): Element{
+        for(let i in this.elements){
+            if(this.elements[i].id === id){
+                return this.elements[i];
+            }
+        }
+    }
+
+    private create(el: Element){
+        let fill = 'white';
+        let stroke = 'black';
+        let text = 'black';
+        if(el.type == 'source'){
+            fill = 'blue';
+            text = 'white';
+        }
+        this.ctx.fillStyle = fill;
+        this.ctx.strokeStyle = stroke;
+        this.ctx.fillRect(el.x, el.y, this.rectW, this.rectH);
+        this.ctx.strokeRect(el.x, el.y, this.rectW, this.rectH);
+        this.ctx.fillStyle = text;
+        this.ctx.textBaseline = "top";
+        this.ctx.fillText(el.label, el.x, el.y);
+        let inputs = el.inputs.length + 1;
+        let outputs = el.outputs.length + 1;
+        let i: any;
+        for(i in el.inputs){
+            let action = el.inputs[i];
+            let y2 = (i+1) / inputs * this.rectH + el.y;
+            this.createAction(action, el.x, y2);
+        }
+        for(i in el.outputs){
+            let action = el.outputs[i];
+            let y2 = (i+1) / outputs * this.rectH + el.y;
+            this.createAction(action, el.x, y2);
+        }
+        /*let total = el.actions.length + 1;
+        console.log(this.getTotal(el));
+        let i: any;
+        for(i in el.actions){
+            let action = el.actions[i];
+            let y2 = (i+1) / total * this.rectH + el.y;
+            this.createAction(action, el.x, y2);
+        }
+    }
+
+    private createAction(action: Action, x:number, y:number){
+        if(action.type == 'input'){
+            this.ctx.strokeStyle = 'white';
+            this.ctx.fillStyle = 'black'
+
+        }else{
+            this.ctx.strokeStyle = 'black';
+            this.ctx.fillStyle = 'white'
+            x += this.rectW;
+        }
+        this.ctx.beginPath();
+        this.ctx.arc(x,y,this.r,0,Math.PI*2,true);
+        this.ctx.fill();
+        this.ctx.beginPath();
+        this.ctx.arc(x,y,this.r,0,Math.PI*2,true);
+        this.ctx.stroke();
+    }*/

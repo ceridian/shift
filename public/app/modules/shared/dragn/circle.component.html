@@ -1,0 +1,2 @@
+<svg:circle [attr.cx]="circle.x" [attr.cy]="circle.y" [attr.r]="circle.r" [attr.class]="circle.subTypes" (mousedown)="click(circle)" />
+<svg:g ng-circle *ngFor="let element of circle.children" [circle]="element"></svg:g>

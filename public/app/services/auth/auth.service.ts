@@ -27,7 +27,13 @@ export class AuthService {
     }
 
     public login(user: string, pass: string){
-        
+        let headers = new Headers({ 'Content-Type': 'application/json'});
+        let options = new RequestOptions({ headers: headers });
+        return this.http.post('login', '{"user":"'+user+'", "pass": "'+pass+'"}', options)
+            .map(function(res: Response){
+                let body = res.json();
+                return body;
+            }).catch(this.util.handleError);
     }
 
     // setters

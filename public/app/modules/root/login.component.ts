@@ -26,7 +26,7 @@ export class LoginComponent{
     }
 
     private userInit(user){
-        let hold = [];
+        /*let hold = [];
         for(let i in user.roles){
             let role = user.roles[i];
             for(let i2 in role.permissions.view){
@@ -34,9 +34,10 @@ export class LoginComponent{
                 var page = new Page(per);
                 hold.push(page);
             }
-        }
+        }*/
+        console.log(user);
         this.auth.setUser(user.user);
-        this.auth.setPages(hold);
+        this.auth.setPages(user.pages);
         this.auth.setToken(user.token.value);
         this.auth.setSettings(user.settings);
         let home = user.settings.home;

@@ -12,8 +12,6 @@ var core_1 = require('@angular/core');
 var router_1 = require('@angular/router');
 //services
 var auth_service_1 = require('../../services/auth/auth.service');
-//models
-var page_1 = require('../../models/page/page');
 var LoginComponent = (function () {
     function LoginComponent(auth, router) {
         this.auth = auth;
@@ -26,17 +24,18 @@ var LoginComponent = (function () {
         this.auth.login(this.user, this.pass).subscribe(function (val) { return _this.userInit(val); }, function (err) { return console.log(err); });
     };
     LoginComponent.prototype.userInit = function (user) {
-        var hold = [];
-        for (var i in user.roles) {
-            var role = user.roles[i];
-            for (var i2 in role.permissions.view) {
+        /*let hold = [];
+        for(let i in user.roles){
+            let role = user.roles[i];
+            for(let i2 in role.permissions.view){
                 var per = role.permissions.view[i2];
-                var page = new page_1.Page(per);
+                var page = new Page(per);
                 hold.push(page);
             }
-        }
+        }*/
+        console.log(user);
         this.auth.setUser(user.user);
-        this.auth.setPages(hold);
+        this.auth.setPages(user.pages);
         this.auth.setToken(user.token.value);
         this.auth.setSettings(user.settings);
         var home = user.settings.home;

@@ -1,3 +1,17 @@
 todo
-1- add source wizard
-2- fork
+pages
+-source
+-fork
+-model
+-settings
+-login
+
+login
+-redirect to user home page
+-show pages account has access to 
+
+source
+-add source
+-edit source
+-list source
+-test source

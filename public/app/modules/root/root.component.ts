@@ -20,13 +20,22 @@ import {Page} from '../../models/page/page';
 
 })
 export class RootComponent {
-    //public width: number;
-    //public height: number;
-    //public elements: any;
     private user: string;
     private pages: Array<Page>;
-    constructor(private router: Router){
-
+    constructor(private router: Router, private auth: AuthService){
+        this.user = '';
+        this.pages = [];
+        auth.username.subscribe(
+            val => {
+                this.user = val;
+            }
+        )
+        auth.pages.subscribe(
+            val => {this.pages = val;}
+        )
+    }
+}
+        // old svg cordinets
         /*this.width = 1000;
         this.height = 500;
         this.elements = [
@@ -102,6 +111,6 @@ export class RootComponent {
                 {id: 'r1i1', label: 'input1', x: 150, y: 205, radius: 10,  type: 'input'},
                 {id: 'r1o1', label: 'input2', x: 150, y: 255, radius: 10, type: 'input'},
             ]}),*/
-        ];
-    }
-}
+        //];
+    //}
+//}

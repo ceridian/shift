@@ -26,6 +26,13 @@ var AuthService = (function () {
         this._pages = [];
     }
     AuthService.prototype.login = function (user, pass) {
+        var headers = new http_1.Headers({ 'Content-Type': 'application/json' });
+        var options = new http_1.RequestOptions({ headers: headers });
+        return this.http.post('login', '{"user":"' + user + '", "pass": "' + pass + '"}', options)
+            .map(function (res) {
+            var body = res.json();
+            return body;
+        }).catch(this.util.handleError);
     };
     // setters
     AuthService.prototype.setUser = function (user) {
